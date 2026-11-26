@@ -1,1 +1,381 @@
 
+/* =================================
+   DENITRACK - MAIN STYLESHEET
+   ================================= */
+
+:root {
+    --primary: #087c55;
+    --primary-dark: #065c40;
+    --primary-light: #e6f5ee;
+    --background: #f4f7f6;
+    --white: #ffffff;
+    --text: #172c25;
+    --muted: #718078;
+    --border: #e3eae6;
+    --danger: #dc3545;
+    --warning: #f0a202;
+    --success: #198754;
+    --shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* HEADER */
+
+.header {
+    background: var(--white);
+    padding: 16px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    color: var(--primary);
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: var(--text);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* LAYOUT */
+
+.container {
+    display: flex;
+    min-height: calc(100vh - 70px);
+}
+
+.sidebar {
+    width: 240px;
+    background: var(--white);
+    padding: 25px 15px;
+    border-right: 1px solid var(--border);
+}
+
+.sidebar a {
+    display: block;
+    text-decoration: none;
+    color: var(--muted);
+    padding: 13px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: 0.3s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    min-width: 0;
+}
+
+/* PAGE TITLES */
+
+.page-title {
+    font-size: 27px;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    margin-bottom: 25px;
+}
+
+/* BUTTONS */
+
+.btn {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--white);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+/* DASHBOARD CARDS */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.stat-card .amount {
+    font-size: 25px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+/* CONTENT CARDS */
+
+.card {
+    background: var(--white);
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+}
+
+.card h2 {
+    font-size: 19px;
+    margin-bottom: 18px;
+}
+
+/* TABLES */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--white);
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+
+th {
+    background: #f7faf8;
+    color: var(--muted);
+    font-weight: bold;
+}
+
+tr:hover {
+    background: #f9fcfa;
+}
+
+/* STATUS LABELS */
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-paid {
+    background: #d9f5e5;
+    color: #087c45;
+}
+
+.status-pending {
+    background: #fff0cc;
+    color: #9a6500;
+}
+
+.status-overdue {
+    background: #ffe0e0;
+    color: #bd2634;
+}
+
+/* FORMS */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 14px;
+    outline: none;
+    background: var(--white);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary);
+}
+
+/* SEARCH */
+
+.search-box {
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    margin-bottom: 20px;
+}
+
+/* LOGIN PAGE */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* ACTIONS */
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* MOBILE RESPONSIVENESS */
+
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sidebar {
+        width: 190px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        padding: 10px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar a {
+        white-space: nowrap;
+        margin: 0 5px;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-title {
+        font-size: 22px;
+    }
+
+    .header {
+        padding: 13px 15px;
+    }
+  }
+  
