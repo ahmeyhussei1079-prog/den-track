@@ -1,1 +1,170 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeniTrack | Debt Management</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1>DeniTrack</h1>
+    <p>Smart Debt. Clear Records. Better Business.</p>
+  </div>
+  <span class="version">Business Edition</span>
+</header>
+
+<main class="container">
+
+  <section class="welcome">
+    <h2>Business Dashboard</h2>
+    <p>Manage customers, loans, commodities and repayments.</p>
+  </section>
+
+  <section class="stats">
+    <div class="stat-card">
+      <p>Total Debt</p>
+      <h2 id="totalDebt">KES 0</h2>
+    </div>
+    <div class="stat-card">
+      <p>Total Paid</p>
+      <h2 id="totalPaid">KES 0</h2>
+    </div>
+    <div class="stat-card">
+      <p>Outstanding</p>
+      <h2 id="totalBalance">KES 0</h2>
+    </div>
+    <div class="stat-card">
+      <p>Customers</p>
+      <h2 id="totalCustomers">0</h2>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Register Customer</h2>
+    <form id="customerForm">
+      <input id="customerName" placeholder="Customer full name" required>
+      <input id="customerPhone" type="tel" placeholder="Phone number" required>
+      <input id="customerLocation" placeholder="Customer location">
+      <button type="submit">Add Customer</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Record New Debt</h2>
+    <form id="debtForm">
+
+      <label>Customer</label>
+      <select id="debtCustomer" required>
+        <option value="">Select customer</option>
+      </select>
+
+      <label>Debt Type</label>
+      <select id="debtType" required>
+        <option value="Cash">Cash Loan</option>
+        <option value="Commodity">Commodity / Goods</option>
+      </select>
+
+      <label>Commodity or Description</label>
+      <input id="description" placeholder="e.g. Rice, Sugar or Cash loan" required>
+
+      <div id="commodityFields">
+        <label>Quantity</label>
+        <input id="quantity" type="number" min="0.01" step="any" placeholder="Quantity">
+
+        <label>Price per unit (KES)</label>
+        <input id="unitPrice" type="number" min="0.01" step="0.01" placeholder="Unit price">
+      </div>
+
+      <label>Total debt (KES)</label>
+      <input id="debtAmount" type="number" min="0.01" step="0.01" placeholder="Amount borrowed" required>
+
+      <label>Date borrowed</label>
+      <input id="debtDate" type="date" required>
+
+      <label>Expected payment date</label>
+      <input id="dueDate" type="date">
+
+      <button type="submit">Save Debt</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Record Customer Payment</h2>
+    <form id="paymentForm">
+
+      <label>Customer Debt</label>
+      <select id="paymentDebt" required>
+        <option value="">Select outstanding debt</option>
+      </select>
+
+      <label>Payment Amount (KES)</label>
+      <input id="paymentAmount" type="number" min="0.01" step="0.01" required>
+
+      <label>Payment Date</label>
+      <input id="paymentDate" type="date" required>
+
+      <label>Payment Method</label>
+      <select id="paymentMethod">
+        <option>Cash</option>
+        <option>M-PESA</option>
+        <option>Bank</option>
+        <option>Other</option>
+      </select>
+
+      <button type="submit">Record Payment</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Customer Debt Records</h2>
+    <input id="search" placeholder="Search customer or commodity...">
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Type / Commodity</th>
+            <th>Date</th>
+            <th>Total Debt</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="debtTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Payment History</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Method</th>
+          </tr>
+        </thead>
+        <tbody id="paymentTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© 2026 DeniTrack. Smart Debt Management.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+      </html>
+    
