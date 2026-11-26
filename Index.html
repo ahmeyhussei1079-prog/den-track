@@ -2,169 +2,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeniTrack | Debt Management</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Den Track - Business debt and repayment management system">
+
+    <title>Den Track | Debt Management System</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header class="topbar">
-  <div>
-    <h1>DeniTrack</h1>
-    <p>Smart Debt. Clear Records. Better Business.</p>
-  </div>
-  <span class="version">Business Edition</span>
+<header class="header">
+    <div class="logo">Den <span>Track</span></div>
+
+    <div class="header-actions">
+        <span>Business Dashboard</span>
+    </div>
 </header>
 
-<main class="container">
+<div class="container">
 
-  <section class="welcome">
-    <h2>Business Dashboard</h2>
-    <p>Manage customers, loans, commodities and repayments.</p>
-  </section>
+    <nav class="sidebar">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#customers">Customers</a>
+        <a href="#add-customer">Add Customer</a>
+        <a href="#record-payment">Record Payment</a>
+        <a href="#repayments">Repayment History</a>
+    </nav>
 
-  <section class="stats">
-    <div class="stat-card">
-      <p>Total Debt</p>
-      <h2 id="totalDebt">KES 0</h2>
-    </div>
-    <div class="stat-card">
-      <p>Total Paid</p>
-      <h2 id="totalPaid">KES 0</h2>
-    </div>
-    <div class="stat-card">
-      <p>Outstanding</p>
-      <h2 id="totalBalance">KES 0</h2>
-    </div>
-    <div class="stat-card">
-      <p>Customers</p>
-      <h2 id="totalCustomers">0</h2>
-    </div>
-  </section>
+    <main class="main-content">
 
-  <section class="panel">
-    <h2>Register Customer</h2>
-    <form id="customerForm">
-      <input id="customerName" placeholder="Customer full name" required>
-      <input id="customerPhone" type="tel" placeholder="Phone number" required>
-      <input id="customerLocation" placeholder="Customer location">
-      <button type="submit">Add Customer</button>
-    </form>
-  </section>
+        <!-- DASHBOARD -->
 
-  <section class="panel">
-    <h2>Record New Debt</h2>
-    <form id="debtForm">
+        <section id="dashboard">
 
-      <label>Customer</label>
-      <select id="debtCustomer" required>
-        <option value="">Select customer</option>
-      </select>
+            <h1 class="page-title">Dashboard</h1>
 
-      <label>Debt Type</label>
-      <select id="debtType" required>
-        <option value="Cash">Cash Loan</option>
-        <option value="Commodity">Commodity / Goods</option>
-      </select>
+            <p class="page-subtitle">
+                Manage your customers, debts and repayments.
+            </p>
 
-      <label>Commodity or Description</label>
-      <input id="description" placeholder="e.g. Rice, Sugar or Cash loan" required>
+            <div class="stats-grid">
 
-      <div id="commodityFields">
-        <label>Quantity</label>
-        <input id="quantity" type="number" min="0.01" step="any" placeholder="Quantity">
+                <div class="stat-card">
+                    <h3>Total Customers</h3>
+                    <div class="amount" id="totalCustomers">0</div>
+                </div>
 
-        <label>Price per unit (KES)</label>
-        <input id="unitPrice" type="number" min="0.01" step="0.01" placeholder="Unit price">
-      </div>
+                <div class="stat-card">
+                    <h3>Outstanding Debt</h3>
+                    <div class="amount" id="totalDebt">KES 0</div>
+                </div>
 
-      <label>Total debt (KES)</label>
-      <input id="debtAmount" type="number" min="0.01" step="0.01" placeholder="Amount borrowed" required>
+                <div class="stat-card">
+                    <h3>Total Repayments</h3>
+                    <div class="amount" id="totalRepayments">KES 0</div>
+                </div>
 
-      <label>Date borrowed</label>
-      <input id="debtDate" type="date" required>
+                <div class="stat-card">
+                    <h3>Overdue Customers</h3>
+                    <div class="amount" id="overdueCustomers">0</div>
+                </div>
 
-      <label>Expected payment date</label>
-      <input id="dueDate" type="date">
+            </div>
 
-      <button type="submit">Save Debt</button>
-    </form>
-  </section>
+        </section>
 
-  <section class="panel">
-    <h2>Record Customer Payment</h2>
-    <form id="paymentForm">
+        <!-- ADD CUSTOMER -->
 
-      <label>Customer Debt</label>
-      <select id="paymentDebt" required>
-        <option value="">Select outstanding debt</option>
-      </select>
+        <section id="add-customer" class="card">
 
-      <label>Payment Amount (KES)</label>
-      <input id="paymentAmount" type="number" min="0.01" step="0.01" required>
+            <h2>Register New Customer</h2>
 
-      <label>Payment Date</label>
-      <input id="paymentDate" type="date" required>
+            <form id="customerForm">
 
-      <label>Payment Method</label>
-      <select id="paymentMethod">
-        <option>Cash</option>
-        <option>M-PESA</option>
-        <option>Bank</option>
-        <option>Other</option>
-      </select>
+                <div class="form-group">
+                    <label for="customerName">Customer Name</label>
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="Enter customer name"
+                        required>
+                </div>
 
-      <button type="submit">Record Payment</button>
-    </form>
-  </section>
+                <div class="form-group">
+                    <label for="customerPhone">Phone Number</label>
+                    <input
+                        type="tel"
+                        id="customerPhone"
+                        placeholder="e.g. 0712345678"
+                        required>
+                </div>
 
-  <section class="panel">
-    <h2>Customer Debt Records</h2>
-    <input id="search" placeholder="Search customer or commodity...">
+                <div class="form-group">
+                    <label for="debtAmount">Debt Amount (KES)</label>
+                    <input
+                        type="number"
+                        id="debtAmount"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="Enter amount"
+                        required>
+                </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Customer</th>
-            <th>Type / Commodity</th>
-            <th>Date</th>
-            <th>Total Debt</th>
-            <th>Paid</th>
-            <th>Balance</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="debtTable"></tbody>
-      </table>
-    </div>
-  </section>
+                <div class="form-group">
+                    <label for="description">Debt Description</label>
+                    <input
+                        type="text"
+                        id="description"
+                        placeholder="e.g. Shop goods or loan">
+                </div>
 
-  <section class="panel">
-    <h2>Payment History</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Customer</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Method</th>
-          </tr>
-        </thead>
-        <tbody id="paymentTable"></tbody>
-      </table>
-    </div>
-  </section>
+                <div class="form-group">
+                    <label for="dueDate">Payment Due Date</label>
+                    <input
+                        type="date"
+                        id="dueDate"
+                        required>
+                </div>
 
-</main>
+                <button type="submit" class="btn btn-primary">
+                    Register Customer
+                </button>
 
-<footer>
-  <p>© 2026 DeniTrack. Smart Debt Management.</p>
-</footer>
+            </form>
+
+        </section>
+
+        <!-- CUSTOMER RECORDS -->
+
+        <section id="customers" class="card">
+
+            <h2>Customer Records</h2>
+
+            <input
+                type="search"
+                id="customerSearch"
+                class="search-box"
+                placeholder="Search customer name or phone">
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Original Debt</th>
+                            <th>Balance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="customerTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- RECORD PAYMENT -->
+
+        <section id="record-payment" class="card">
+
+            <h2>Record Customer Repayment</h2>
+
+            <form id="paymentForm">
+
+                <div class="form-group">
+                    <label for="customerId">Customer ID</label>
+                    <input
+                        type="text"
+                        id="customerId"
+                        placeholder="Enter customer ID"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="paymentAmount">Payment Amount (KES)</label>
+                    <input
+                        type="number"
+                        id="paymentAmount"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="Enter amount paid"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Record Repayment
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- REPAYMENT HISTORY -->
+
+        <section id="repayments" class="card">
+
+            <h2>Repayment History</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Amount Paid</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="repaymentTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- FOOTER -->
+
+        <footer>
+            Den Track &copy; 2026.
+            Debt Management Made Easier.
+        </footer>
+
+    </main>
+
+</div>
 
 <script src="script.js"></script>
+
 </body>
-      </html>
-    
+  </html>
+
+
+
