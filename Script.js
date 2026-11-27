@@ -1,371 +1,194 @@
-script
-// DENITRACK - BUSINESS EDITION
-// Version 1.0
 
-let customers = JSON.parse(localStorage.getItem("dt_customers") || "[]");
-let debts = JSON.parse(localStorage.getItem("dt_debts") || "[]");
-let payments = JSON.parse(localStorage.getItem("dt_payments") || "[]");
+// DEN TRACK - Debt Management System
 
-const $ = id => document.getElementById(id);
+// Load saved records
+let customers = JSON.parse(localStorage.getItem("denTrackCustomers")) || [];
 
-function saveData() {
-  localStorage.setItem("dt_customers", JSON.stringify(customers));
-  localStorage.setItem("dt_debts", JSON.stringify(debts));
-  localStorage.setItem("dt_payments", JSON.stringify(payments));
+// Save records
+function saveCustomers() {
+    localStorage.setItem(
+        "denTrackCustomers",
+        JSON.stringify(customers)
+    );
+    updateDashboard();
+    displayCustomers();
 }
 
-function money(amount) {
-  return "KES " + Number(amount).toLocaleString("en-KE", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-function today() {
-  const d = new Date();
-  const offset = d.getTimezoneOffset();
-  return new Date(d.getTime() - offset * 60000)
-    .toISOString().slice(0, 10);
-}
-
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-function customerName(id) {
-  const customer = customers.find(c => c.id === id);
-  return customer ? customer.name : "Unknown customer";
-}
-
-function totalPaid(debtId) {
-  return payments
-    .filter(p => p.debtId === debtId)
-    .reduce((sum, p) => sum + p.amount, 0);
-}
-
-function balance(debt) {
-  return Math.max(0, debt.amount - totalPaid(debt.id));
-}
-
-// REGISTER CUSTOMER
-$("customerForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const customer = {
-    id: crypto.randomUUID(),
-    name: $("customerName").value.trim(),
-    phone: $("customerPhone").value.trim(),
-    location: $("customerLocation").value.trim(),
-    createdAt: today()
-  };
-
-  if (!customer.name || !customer.phone) {
-    alert("Enter the customer's name and phone number.");
-    return;
-  }
-
-  customers.push(customer);
-  saveData();
-  this.reset();
-  render();
-
-  alert("Customer registered successfully!");
-});
-
-// UPDATE CUSTOMER LIST
-function renderCustomers() {
-  $("debtCustomer").innerHTML =
-    '<option value="">Select customer</option>';
-
-  customers.forEach(c => {
-    $("debtCustomer").innerHTML +=
-      `<option value="${c.id}">${escapeHTML(c.name)} - ${escapeHTML(c.phone)}</option>`;
-  });
-}
-
-// AUTOMATIC COMMODITY CALCULATION
-function calculateCommodity() {
-  if ($("debtType").value !== "Commodity") return;
-
-  const quantity = Number($("quantity").value);
-  const price = Number($("unitPrice").value);
-
-  if (quantity > 0 && price > 0) {
-    $("debtAmount").value = (quantity * price).toFixed(2);
-  }
-}
-
-$("quantity").addEventListener("input", calculateCommodity);
-$("unitPrice").addEventListener("input", calculateCommodity);
-
-$("debtType").addEventListener("change", function() {
-  const isCommodity = this.value === "Commodity";
-
-  $("commodityFields").style.display =
-    isCommodity ? "grid" : "none";
-
-  $("quantity").required = isCommodity;
-  $("unitPrice").required = isCommodity;
-
-  $("quantity").value = "";
-  $("unitPrice").value = "";
-  $("debtAmount").value = "";
-});
-
-// RECORD NEW DEBT
-$("debtForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const customerId = $("debtCustomer").value;
-  const type = $("debtType").value;
-  const amount = Number($("debtAmount").value);
-  const description = $("description").value.trim();
-
-  if (!customers.some(c => c.id === customerId)) {
-    alert("Please select a registered customer.");
-    return;
-  }
-
-  if (!description || !Number.isFinite(amount) || amount <= 0) {
-    alert("Enter a valid description and debt amount.");
-    return;
-  }
-
-  const quantity = type === "Commodity"
-    ? Number($("quantity").value)
-    : null;
-
-  const unitPrice = type === "Commodity"
-    ? Number($("unitPrice").value)
-    : null;
-
-  if (type === "Commodity" &&
-      (!(quantity > 0) || !(unitPrice > 0) ||
-       Math.abs(quantity * unitPrice - amount) > 0.01)) {
-    alert("Check the commodity quantity, price and total.");
-    return;
-  }
-
-  const debtDate = $("debtDate").value;
-  const dueDate = $("dueDate").value;
-
-  if (!debtDate || (dueDate && dueDate < debtDate)) {
-    alert("Check the debt date and expected payment date.");
-    return;
-  }
-
-  const debt = {
-    id: crypto.randomUUID(),
-    customerId,
-    type,
-    description,
-    quantity,
-    unitPrice,
-    amount,
-    date: debtDate,
-    dueDate
-  };
-
-  debts.push(debt);
-  saveData();
-  this.reset();
-
-  $("debtDate").value = today();
-  $("commodityFields").style.display = "none";
-
-  render();
-  alert("Debt recorded successfully!");
-});
-
-// UPDATE OUTSTANDING DEBTS LIST
-function renderDebtOptions() {
-  const select = $("paymentDebt");
-  select.innerHTML =
-    '<option value="">Select outstanding debt</option>';
-
-  debts.forEach(debt => {
-    const remaining = balance(debt);
-
-    if (remaining > 0) {
-      const option = document.createElement("option");
-      option.value = debt.id;
-      option.textContent =
-        `${customerName(debt.customerId)} - ${debt.description} - ${money(remaining)}`;
-      select.appendChild(option);
-    }
-  });
-}
-
-// RECORD CUSTOMER PAYMENT
-$("paymentForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const debtId = $("paymentDebt").value;
-  const debt = debts.find(d => d.id === debtId);
-  const amount = Number($("paymentAmount").value);
-  const date = $("paymentDate").value;
-
-  if (!debt || !Number.isFinite(amount) || amount <= 0) {
-    alert("Select a debt and enter a valid payment.");
-    return;
-  }
-
-  const remaining = balance(debt);
-
-  if (amount > remaining + 0.001) {
-    alert("Payment cannot exceed the remaining balance of " +
-      money(remaining));
-    return;
-  }
-
-  if (!date || date < debt.date || date > today()) {
-    alert("Enter a valid payment date.");
-    return;
-  }
-
-  payments.push({
-    id: crypto.randomUUID(),
-    debtId,
-    amount,
-    date,
-    method: $("paymentMethod").value
-  });
-
-  saveData();
-  this.reset();
-  $("paymentDate").value = today();
-
-  render();
-  alert("Payment recorded successfully!");
-});
-
-// DASHBOARD CALCULATIONS
-function renderDashboard() {
-  const debtTotal = debts.reduce((sum, d) => sum + d.amount, 0);
-
-  const paidTotal = payments.reduce(
-    (sum, p) => sum + p.amount, 0
-  );
-
-  const outstanding = debts.reduce(
-    (sum, d) => sum + balance(d), 0
-  );
-
-  $("totalDebt").textContent = money(debtTotal);
-  $("totalPaid").textContent = money(paidTotal);
-  $("totalBalance").textContent = money(outstanding);
-  $("totalCustomers").textContent = customers.length;
-}
-
-// DISPLAY DEBT RECORDS
-function renderDebts() {
-  const search = $("search").value.toLowerCase();
-
-  const filtered = debts.filter(debt => {
-    const name = customerName(debt.customerId).toLowerCase();
-    const description = debt.description.toLowerCase();
-
-    return name.includes(search) || description.includes(search);
-  });
-
-  const table = $("debtTable");
-  table.innerHTML = "";
-
-  if (filtered.length === 0) {
-    table.innerHTML =
-      '<tr><td colspan="7">No debt records found.</td></tr>';
-    return;
-  }
-
-  filtered.forEach(debt => {
-    const paid = totalPaid(debt.id);
-    const remaining = balance(debt);
-
-    let status = "pending";
-    let label = "Partially paid";
-
-    if (remaining <= 0) {
-      status = "paid";
-      label = "Fully paid";
-    } else if (debt.dueDate && debt.dueDate < today()) {
-      status = "overdue";
-      label = "Overdue";
+// Register a new customer
+function addCustomer(name, phone, amount, description) {
+    if (!name || !phone || amount <= 0) {
+        alert("Please enter valid customer details.");
+        return;
     }
 
-    const commodityInfo = debt.type === "Commodity"
-      ? `${debt.description} (${debt.quantity})`
-      : debt.description;
+    const customer = {
+        id: Date.now(),
+        name: name.trim(),
+        phone: phone.trim(),
+        amount: Number(amount),
+        description: description || "General debt",
+        repayments: [],
+        createdAt: new Date().toISOString()
+    };
 
-    const row = document.createElement("tr");
+    customers.push(customer);
+    saveCustomers();
 
-    row.innerHTML = `
-      <td>${escapeHTML(customerName(debt.customerId))}</td>
-      <td>${escapeHTML(debt.type)}: ${escapeHTML(commodityInfo)}</td>
-      <td>${escapeHTML(debt.date)}</td>
-      <td>${money(debt.amount)}</td>
-      <td>${money(paid)}</td>
-      <td><strong>${money(remaining)}</strong></td>
-      <td><span class="status ${status}">${label}</span></td>
-    `;
-
-    table.appendChild(row);
-  });
+    alert("Customer registered successfully!");
 }
 
-// DISPLAY PAYMENT HISTORY
-function renderPayments() {
-  const table = $("paymentTable");
-  table.innerHTML = "";
+// Calculate outstanding balance
+function getBalance(customer) {
+    const paid = customer.repayments.reduce(
+        (total, payment) => total + payment.amount,
+        0
+    );
 
-  const sorted = [...payments].sort(
-    (a, b) => b.date.localeCompare(a.date)
-  );
-
-  if (sorted.length === 0) {
-    table.innerHTML =
-      '<tr><td colspan="4">No payments recorded yet.</td></tr>';
-    return;
-  }
-
-  sorted.forEach(payment => {
-    const debt = debts.find(d => d.id === payment.debtId);
-    if (!debt) return;
-
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${escapeHTML(customerName(debt.customerId))}</td>
-      <td>${escapeHTML(payment.date)}</td>
-      <td>${money(payment.amount)}</td>
-      <td>${escapeHTML(payment.method)}</td>
-    `;
-
-    table.appendChild(row);
-  });
+    return Math.max(0, customer.amount - paid);
 }
 
-// REFRESH THE WHOLE APPLICATION
-function render() {
-  renderCustomers();
-  renderDebtOptions();
-  renderDashboard();
-  renderDebts();
-  renderPayments();
+// Record repayment
+function recordPayment(customerId, amount) {
+    const customer = customers.find(
+        item => item.id === Number(customerId)
+    );
+
+    amount = Number(amount);
+
+    if (!customer || amount <= 0) {
+        alert("Invalid customer or repayment amount.");
+        return;
+    }
+
+    const balance = getBalance(customer);
+
+    if (amount > balance) {
+        alert("Payment cannot exceed the outstanding balance.");
+        return;
+    }
+
+    customer.repayments.push({
+        amount: amount,
+        date: new Date().toISOString()
+    });
+
+    saveCustomers();
+    alert("Repayment recorded successfully!");
 }
 
-// SEARCH CUSTOMERS AND DEBTS
-$("search").addEventListener("input", renderDebts);
+// Delete customer
+function deleteCustomer(customerId) {
+    const confirmed = confirm(
+        "Are you sure you want to delete this customer?"
+    );
 
-// INITIALIZE APPLICATION
-$("debtDate").value = today();
-$("paymentDate").value = today();
-$("commodityFields").style.display = "none";
+    if (!confirmed) return;
 
-render();
-    
+    customers = customers.filter(
+        customer => customer.id !== Number(customerId)
+    );
+
+    saveCustomers();
+}
+
+// Display customers
+function displayCustomers(searchTerm = "") {
+    const table = document.getElementById("customerList");
+
+    if (!table) return;
+
+    table.innerHTML = "";
+
+    const filtered = customers.filter(customer =>
+        customer.name.toLowerCase().includes(
+            searchTerm.toLowerCase()
+        ) ||
+        customer.phone.includes(searchTerm)
+    );
+
+    filtered.forEach(customer => {
+        const balance = getBalance(customer);
+
+        const row = document.createElement("tr");
+
+        const values = [
+            customer.name,
+            customer.phone,
+            `KES ${customer.amount.toLocaleString()}`,
+            `KES ${balance.toLocaleString()}`,
+            balance === 0 ? "Paid" : "Pending"
+        ];
+
+        values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = () => deleteCustomer(customer.id);
+
+        actionCell.appendChild(deleteButton);
+        row.appendChild(actionCell);
+
+        table.appendChild(row);
+    });
+}
+
+// Dashboard statistics
+function updateDashboard() {
+    const totalDebt = customers.reduce(
+        (sum, customer) => sum + customer.amount,
+        0
+    );
+
+    const totalPaid = customers.reduce(
+        (sum, customer) =>
+            sum + customer.repayments.reduce(
+                (total, payment) => total + payment.amount,
+                0
+            ),
+        0
+    );
+
+    const outstanding = totalDebt - totalPaid;
+
+    const totalCustomers = document.getElementById("totalCustomers");
+    const totalDebtElement = document.getElementById("totalDebt");
+    const totalPaidElement = document.getElementById("totalPaid");
+    const outstandingElement = document.getElementById("outstanding");
+
+    if (totalCustomers)
+        totalCustomers.textContent = customers.length;
+
+    if (totalDebtElement)
+        totalDebtElement.textContent =
+            `KES ${totalDebt.toLocaleString()}`;
+
+    if (totalPaidElement)
+        totalPaidElement.textContent =
+            `KES ${totalPaid.toLocaleString()}`;
+
+    if (outstandingElement)
+        outstandingElement.textContent =
+            `KES ${outstanding.toLocaleString()}`;
+}
+
+// Search customers
+function searchCustomers() {
+    const searchInput = document.getElementById("searchCustomer");
+
+    if (searchInput) {
+        displayCustomers(searchInput.value);
+    }
+}
+
+// Initialize application
+document.addEventListener("DOMContentLoaded", () => {
+    updateDashboard();
+    displayCustomers();
+});
+                    
